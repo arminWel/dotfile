@@ -11,11 +11,12 @@ antigen bundle heroku
 antigen bundle pip
 antigen bundle lein
 antigen bundle command-not-found
+antigen bundle Aloxaf/fzf-tab
 
 # Syntax highlighting bundle.
 antigen bundle zsh-users/zsh-syntax-highlighting
 
-antigen bundle https://github.com/aperezdc/zsh-fzy
+#antigen bundle https://github.com/aperezdc/zsh-fzy
 # Load the theme.
 antigen theme dogenpunk
 
@@ -46,11 +47,7 @@ gpg-connect-agent updatestartuptty /bye >/dev/null
 # Vim is love, vim is live
 bindkey -v
 
-bindkey '\ec' fzy-cd-widget
-
 bindkey  fzy-history-widget
-
-bindkey  fzy-file-widget 
 
 # --------Colors&Co--------
 source ~/.local/share/nvim/plugged/falcon/exa/EXA_COLORS
@@ -73,3 +70,7 @@ alias g=git
 alias gi=git
 alias gitignore='curl https://www.toptal.com/developers/gitignore/api/latex >.gitignore'
 alias bat=cat
+alias c='cd $(find ~ -type d -not -wholename "*/\.*" | fzf)'
+alias ch='cd $(find . -type d -not -wholename "*.git/*" | fzf)'
+
+enable-fzf-tab
