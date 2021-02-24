@@ -1,0 +1,51 @@
+[user]
+    email = armin.wells@student.hpi.uni-potsdam.de
+	name = Armin Wells
+	signingkey = 5BE3C04296C41952
+
+[color]
+	ui = auto
+	[color "branch"]
+		current = yellow reverse
+		local = yellow
+		remote = green
+	[color "diff"]
+		meta = yellow bold
+		frag = magenta bold
+		old = red bold
+		new = green bold
+	[color "status"]
+		added = green
+		changed = yellow
+		untracked = cyan
+
+[alias]
+	cm = commit
+	co = checkout
+	st = status
+	hit = reset															# git hit HEAD --hard
+	lol = log --graph --decorate --pretty=oneline --abbrev-commit
+	loa = log --graph --decorate --pretty=oneline --abbrev-commit --all
+	lon = log --oneline --graph
+
+[commit]
+    gpgsign = true
+
+[push]
+	default = matching
+
+[core]
+	excludesFile = ~/.gitignore
+	editor = nvim
+    pager = delta
+
+[pull]
+	rebase = false
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+
+[delta]
+    side-by-side = true
+
+[interactive]
+    diffFilter = delta --color-only

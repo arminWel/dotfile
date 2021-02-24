@@ -1,0 +1,6 @@
+configuration {
+ modi: "combi,run,calc,window,drun,run";
+ theme: "solarized";
+ font: "monospace 30";
+ combi-modi: "window,drun,run";
+ }
