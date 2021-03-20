@@ -3,6 +3,9 @@
 	name = Armin Wells
 	signingkey = 5BE3C04296C41952
 
+[init]
+    defaultBranch = main
+
 [color]
 	ui = auto
 	[color "branch"]
