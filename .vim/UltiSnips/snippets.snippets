@@ -1,0 +1,17 @@
+snippet opt "Characters that are only present, if some variable is" i
+`head -n 1 ~/.vim/UltiSnips/opt_snippet`$1`head -n 2 ~/.vim/UltiSnips/opt_snippet | tail -n 1`$2`head -n 3 ~/.vim/UltiSnips/opt_snippet| tail -n 1`$0
+endsnippet
+
+snippet snip "The Snippet Snippet"
+snippet ${1:Trigger} "${2:Description}" ${3:Options}
+${0}
+`echo endsnippet`
+endsnippet
+
+snippet VIS "VISUAL" A
+\${$1:\${VISUAL}}
+endsnippet
+
+snippet VIS "VISUAL" i
+\${$1:\${VISUAL}}
+endsnippet

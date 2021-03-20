@@ -1,0 +1,537 @@
+global !p
+
+def print_today():
+	import datetime
+	now = datetime.datetime.now()
+	snip.rv = now.strftime('%d.%m.%Y')
+
+def create_table(snip):
+	rows = snip.buffer[snip.line].split('x')[0]
+	cols = snip.buffer[snip.line].split('x')[1]
+
+	int_val = lambda string: int(''.join(s for s in string if s.isdigit()))
+	
+	rows = int_val(rows)
+	cols = int_val(cols)
+
+	offset = cols + 1
+	old_spacing = snip.buffer[snip.line][:snip.buffer[snip.line].rfind('\t') + 1]
+	
+	snip.buffer[snip.line] = ''
+	
+	final_str = old_spacing + "\\begin{tabular}{${1:" + 'c'*cols + "}}\n"
+
+	for i in range(rows):
+		final_str += old_spacing + '\t'
+		final_str += " & ".join(['$' + str(i * cols + j + offset) for j in range(cols)])
+
+		final_str += " \\\\\\\n"
+
+	final_str += old_spacing + "\\end{tabular}\n$0"
+
+	snip.expand_anon(final_str)
+
+texMathZones = ['texMathZone' + x for x in ['', 'X', 'XX', 'Env', 'EnvStarred', 'Ensured']]
+texIgnoreMathZones = ['texMathTextArg']
+texMathZoneIds = vim.eval('map('+str(texMathZones)+", 'hlID(v:val)')")
+texIgnoreMathZoneIds = vim.eval('map('+str(texIgnoreMathZones)+", 'hlID(v:val)')")
+ignore = texIgnoreMathZoneIds[0]
+def math():
+	synstackids = vim.eval("synstack(line('.'), col('.') - (col('.')>=2 ? 1 : 0))")
+	try:
+		first = next(i for i in reversed(synstackids) if i in texIgnoreMathZoneIds or i in texMathZoneIds)
+		return first != ignore
+	except StopIteration:
+		return False
+endglobal
+
+snippet font "Set Neo Sans Pro Font" b
+\\usepackage{fontspec}
+\\setsansfont[Ligatures=TeX]{Neo Sans Pro}
+\\renewcommand{\\familydefault}{\\sfdefault}
+endsnippet
+priority -1
+snippet "\\?beg(in)?" "begin{} / end{}" wr
+\begin{${1:something}}
+	${0:${VISUAL}}
+\end{$1}
+endsnippet
+
+priority 0
+snippet table "Table environment" b
+\begin{table}`!p snip.rv='[' if t[1] else ""`${1:htpb}`!p snip.rv = ']' if t[1] else ""`
+	\centering
+	\caption{${2:caption}}
+	\label{tab:${3:label}}
+	gentbl$4x$5
+\end{table}
+endsnippet
+
+snippet fig "Figure environment" b
+\begin{figure}`!p snip.rv='[' if t[2] else ""`${2:htpb}`!p snip.rv=']' if t[2] else ""`
+	\centering
+	\includegraphics[width=${3:0.8}\linewidth]{${4:name.ext}}
+	\caption{$0}%
+	\label{fig:$5}
+\end{figure}
+endsnippet
+
+snippet enum "Enumerate" b
+\begin{enumerate}
+	\item $0
+\end{enumerate}
+endsnippet
+
+snippet benum "Beamer Enumerate" b
+\begin{enumerate}[<+-|alert@+>]
+	\item $0
+\end{enumerate}
+endsnippet
+
+snippet item "Itemize" b
+\begin{itemize}
+	\item $0
+\end{itemize}
+endsnippet
+
+snippet bitem "Beamer Itemize" b
+\begin{itemize}[<+-|alert@+>]
+	\item $0
+\end{itemize}
+endsnippet
+
+snippet def "Definition envoiriment " b
+\begin{definition}%
+`!p snip.rv='\\label{def:' if t[1] else ""`${1:label}`!p snip.rv='}' if t[1] else ""`
+	$0
+\end{definition}
+endsnippet
+
+snippet cor "Corollary envoiriment " b
+\begin{corollary}%
+`!p snip.rv='\\label{cor:' if t[1] else ""`${1:label}`!p snip.rv='}' if t[1] else ""`
+	$0
+\end{corollary}
+endsnippet
+
+snippet thm "Theorem envoiriment " b
+\begin{theorem}%
+`!p snip.rv='\\label{thm:' if t[1] else ""`${1:label}`!p snip.rv='}' if t[1] else ""`
+	$0
+\end{theorem}
+endsnippet
+
+snippet lem "Lemma envoiriment " b
+\begin{lemma}%
+`!p snip.rv='\\label{lem:' if t[1] else ""`${1:label}`!p snip.rv='}' if t[1] else ""`
+	$0
+\end{lemma}
+endsnippet
+
+snippet claim "claim envoiriment " b
+\begin{claim}%
+`!p snip.rv='\\label{claim:' if t[1] else ""`${1:label}`!p snip.rv='}' if t[1] else ""`
+	$0
+\end{claim}
+endsnippet
+snippet prf "proof environment" b
+\begin{proof}
+	$0
+\end{proof}
+endsnippet
+
+snippet sol "solution environment" b
+\begin{solution}
+	$0
+\end{solution}
+endsnippet
+
+snippet exp "Example environment " b
+\begin{example}%
+`!p snip.rv='\\label{exp:' if t[1] else ""`${1:label}`!p snip.rv='}' if t[1] else ""`
+	$0
+\end{example}
+endsnippet
+
+snippet exe "Exercise environment " b
+\begin{exercise}%
+`!p snip.rv='\\label{exe:' if t[1] else ""`${1:label}`!p snip.rv='}' if t[1] else ""`
+	$0
+\end{exercise}
+endsnippet
+
+snippet sexe "Exercise environment " b
+\begin{subexercise}%
+`!p snip.rv='\\label{exe:' if t[1] else ""`${1:label}`!p snip.rv='}' if t[1] else ""`
+	$0
+\end{subexercise}
+endsnippet
+
+snippet algo "Pseudocode for an algorithm" 
+\begin{algorithm}
+	\KwIn{$3}
+	$0
+	\Return{$4}
+	\caption{$1}%
+	\label{algo:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
+\end{algorithm}
+endsnippet
+
+snippet desc "Description" b
+\begin{description}
+	\item[$1] $0
+\end{description}
+endsnippet
+
+pre_expand "create_table(snip)"
+snippet "gentbl(\d+)x(\d+)" "Generate table of *width* by *height*" r  
+endsnippet
+
+snippet i "Individual item" b
+\item $0
+endsnippet
+
+snippet part "Part" b
+\part{${1:part name}}%
+\label{prt:${2:${1/(\w+)|\W+/(?1:\L$0\E:_)/ga}}}
+
+$0
+endsnippet
+
+snippet frame "Frame" b
+\begin{frame}{$1}%
+\label{fr:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
+	$0
+\end{frame}
+endsnippet
+
+snippet col "Dualcolumns for Beamer" b
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+	$1
+	\end{column}
+	\begin{column}{0.5\textwidth}
+	$2
+	\end{column}
+\end{columns}
+$0
+endsnippet
+
+snippet cha "Chapter" b
+\chapter{${1:chapter name}}%
+\label{cha:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
+
+$0
+endsnippet
+
+snippet sec "Section"
+\section{${1:${VISUAL:section name}}}%
+\label{sec:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
+
+$0
+endsnippet
+
+snippet sec* "Section"
+\section*{${1:${VISUAL:section name}}}%
+\label{sec:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
+
+${0}
+endsnippet
+
+snippet sub "Subsection"
+\subsection{${1:${VISUAL:subsection name}}}%
+\label{sub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
+
+$0
+endsnippet
+
+snippet sub* "Subsection"
+\subsection*{${1:${VISUAL:subsection name}}}%
+\label{sub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
+
+${0}
+endsnippet
+
+snippet ssub "Subsubsection"
+\subsubsection{${1:${VISUAL:subsubsection name}}}%
+\label{ssub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
+
+$0
+endsnippet
+
+snippet ssub* "Subsubsection"
+\subsubsection*{${1:${VISUAL:subsubsection name}}}%
+\label{ssub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
+
+${0}
+endsnippet
+
+snippet par "Paragraph"
+\paragraph{${1:${VISUAL:paragraph name}}}%
+\label{par:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
+
+$0
+endsnippet
+
+snippet subp "Subparagraph"
+\subparagraph{${1:${VISUAL:subparagraph name}}}%
+\label{par:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
+
+$0
+endsnippet
+
+snippet pac "Package" b
+\usepackage`!p snip.rv='[' if t[1] else ""`${1:options}`!p snip.rv = ']' if t[1] else ""`{${2:package}}$0
+endsnippet
+snippet ... "ldots" iA
+\ldots
+endsnippet
+snippet <-- "leftarrow" iA
+\leftarrow
+endsnippet
+
+snippet --> "rightarrow" iA
+\rightarrow
+endsnippet
+
+snippet <-> "leftrightarrow" iA
+\leftrightarrow
+endsnippet
+
+snippet <== "Leftarrow" iA
+\Leftarrow
+endsnippet
+
+snippet ==> "Rightarrow" iA
+\Rightarrow
+endsnippet
+
+snippet <=> "Leftrightarrow" iA
+\Leftrightarrow
+endsnippet
+
+#Text mode stuff
+snippet '.\ ' "Linebreak" iA
+.
+$0
+endsnippet
+snippet it "textit" w
+\\textit{$1}$0
+endsnippet
+
+snippet bf "textbf" w
+\\textbf{${1:${VISUAL}}}`!p
+if t[2] and t[2][0] not in [',', '.', '?', '-', ' ', ')']:
+	snip.rv = ' '
+else:
+	snip.rv = ''
+`$2
+endsnippet
+
+snippet sc "textsc" w
+\\textsc{${1:${VISUAL}}}`!p
+if t[2] and t[2][0] not in [',', '.', '?', '-', ' ', ')']:
+	snip.rv = ' '
+else:
+	snip.rv = ''
+`$2
+endsnippet
+
+snippet em "emph" w
+\\emph{${1:${VISUAL}}}`!p
+if t[2] and t[2][0] not in [',', '.', '?', '-', ' ', ')']:
+	snip.rv = ' '
+else:
+	snip.rv = ''
+`$2
+endsnippet
+
+snippet tw "white text" w
+\textcolor{white}{${1:${VISUAL}}}$0
+endsnippet
+snippet iff "if and only if" 
+if and only if 
+endsnippet
+
+snippet ie "that is" 
+i.e., 
+endsnippet
+
+snippet eg "for example" 
+e.g., 
+endsnippet
+
+#pre_expand "print_today()"
+snippet today "Print current date (DD.MM.YYYY)"
+`!p print_today()`
+endsnippet
+#Heavy Math input
+snippet mk "Math" wA
+\\(${1:${VISUAL}}\\)`!p
+if t[2] and t[2][0] not in [',', '.', '?', '-', ' ', ')']:
+	snip.rv = ' '
+else:
+	snip.rv = ''
+`$2
+endsnippet
+
+snippet mk "Math" i
+\\(${1:${VISUAL}}\\)`!p
+if t[2] and t[2][0] not in [',', '.', '?', '-', ' ']:
+	snip.rv = ' '
+else:
+	snip.rv = ''
+`$2
+endsnippet
+
+snippet dm "Math" wA
+\[
+${1:${VISUAL}}
+\] $0
+endsnippet
+
+snippet ali "Align" bA
+\begin{align*}
+	${1:${VISUAL}}
+\end{align*}
+endsnippet
+
+snippet eq "equation" b
+\begin{equation*}
+	${1:${VISUAL}}
+\end{equation*}
+endsnippet
+
+snippet / "Fraction" i
+\\frac{$1}{$2}$0
+endsnippet
+
+context "math()"
+snippet s- "setminus"
+\setminus
+endsnippet
+
+context "math()"
+snippet cas "Cases" iA
+\\begin{cases}
+$0, &\\caseIf $2;\\\\
+$3, &${4:\\caseElse}.
+\\end{cases}
+endsnippet
+
+context "math()"
+snippet '([A-Za-z])(\d)' "auto subscript" rA
+`!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
+endsnippet
+
+context "math()"
+snippet ceil "ceil" iA
+\left\lceil $1 \right\rceil $0
+endsnippet
+
+context "math()"
+snippet floor "floor" iA
+\left\lfloor $1 \right\rfloor$0
+endsnippet
+
+context "math()"
+snippet () "left( right)" iA
+\left( ${1:${VISUAL}} \right) $0
+endsnippet
+
+context "math()"
+snippet <> "left( right)" iA
+\langle ${1:${VISUAL}} \rangle $0
+endsnippet
+
+snippet sum "sum" w
+\sum_{${1:n}${2:=}${3:1}}^{${4:\infty}} ${5}
+endsnippet
+
+context "math()"
+snippet pow "to the ... power" iA
+^{$1}$0
+endsnippet
+
+snippet __ "subscript" iA
+_{$1}$0
+endsnippet
+
+context "math()"
+snippet mcal "mathcal" iA
+\mathcal{$1}$0
+endsnippet
+
+context "math()"
+snippet lll "l" iA
+\ell
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(sin|cos|arccot|cot|csc|ln|log|exp|star|perp)' "ln" rwA
+\\`!p snip.rv = match.group(1)`
+endsnippet
+
+context "math()"
+snippet set "set" wA
+\\set{$1}`!p snip.rv='{' if t[2] else ""`$2 `!p snip.rv='}' if t[2] else ""`$0
+endsnippet
+
+context "math()"
+snippet sb "subset(eq)" iA
+\subset$0
+endsnippet
+
+context "math()"
+snippet sp "superset(eq)" iA
+\supset$0
+endsnippet
+
+context "math()"
+snippet inn "in " iA
+\in 
+endsnippet
+
+context "math()"
+snippet := "coloneqq" iA
+\coloneqq
+endsnippet
+
+context "math()"
+snippet : "colonq" i
+\colon
+endsnippet
+
+context "math()"
+snippet phi "varphi" wA
+\varphi`!p snip.rv='_{' if t[1] else ""`${1:e}`!p snip.rv='}' if t[1] else ""`$0
+endsnippet
+
+context "math()"
+snippet chi "chi with index" wA
+\chi`!p snip.rv='_{' if t[1] else ""`$1`!p snip.rv='}' if t[1] else ""`
+endsnippet
+
+context "math()"
+snippet eps "varepsilon" iA
+\varepsilon
+endsnippet
+context "math()"
+snippet hat "hat" iA
+\\hat{${1:${VISUAL}}} $0
+endsnippet
+
+context "math()"
+snippet ovl "overline" iA
+\\overline{${1:${VISUAL}}} $0
+endsnippet
+
+context "math()"
+snippet til "tilde" iA
+\\tilde{${1:${VISUAL}}} $0
+endsnippet
+
+snippet texroot "Set the tex root" b
+%!TEX root = $1
+endsnippet
+# vim:ft=snippets:
