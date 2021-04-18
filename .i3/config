@@ -229,7 +229,8 @@ for_window [class="Timeset-gui"] floating enable border normal
 #for_window [class="(?i)virtualbox"] floating enable border normal
 for_window [class="Xfburn"] floating enable
 for_window [class="KeePassXC"] floating enable sticky enable move scratchpad 
-for_window [class="Spotify"] floating enable sticky enable move scratchpad resize set 3000px 2000px move position 100px 200px
+for_window [class="Spotify"] floating enable sticky enable move scratchpad resize set 3200px 1700px
+for_window [class="Spotify"] move position 300px 200px
 
 # switch to workspace with urgent window automatically
 for_window [urgent=latest] focus
@@ -374,8 +375,7 @@ bar {
     }
 }
 
-# hide/unhide i3status bar
-bindsym $mod+m bar mode toggle
+bindsym $mod+m exec ~/bin/focus_toggle
 
 # Theme colors
 # class                   border  backgr. text    indic.   child_border

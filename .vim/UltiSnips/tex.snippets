@@ -45,6 +45,38 @@ def math():
 		return False
 endglobal
 
+snippet letter "Template for a letter" b
+\\documentclass[
+	ngerman,
+	paper=a4,
+	version=last,
+	privat]{scrlttr2}
+\\usepackage{babel}
+\\usepackage{csquotes}
+\\usepackage[T1]{fontenc}
+\\begin{document}
+
+% \\potsdamtrue
+% \\hpimailtrue
+% \\KOMAoptions{%
+%	foldmarks=BTp
+% }
+\\setkomavar{subject}{$1}
+\\begin{letter}{%
+	${2:Name_recipient}\\\\
+	${3:Street}\\\\
+	${4:postal code}%
+}
+\\opening{$5}
+$0
+\\closing{${6:Viele Grü\ss{}e}}
+\\encl{%
+${7:Anlagen}
+}
+\\end{letter}
+
+\\end{document}
+endsnippet
 snippet font "Set Neo Sans Pro Font" b
 \\usepackage{fontspec}
 \\setsansfont[Ligatures=TeX]{Neo Sans Pro}
@@ -348,6 +380,9 @@ endsnippet
 
 snippet tw "white text" w
 \textcolor{white}{${1:${VISUAL}}}$0
+endsnippet
+snippet tc "colored text" w
+\textcolor{$2}{${1:${VISUAL}}}$0
 endsnippet
 snippet iff "if and only if" 
 if and only if 
