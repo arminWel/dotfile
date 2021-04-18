@@ -1,0 +1,11 @@
+#!/bin/zsh
+
+TOGGLE=/tmp/.focussed
+
+if [ ! -e $TOGGLE ]; then
+    touch $TOGGLE
+    $HOME/bin/focus
+else
+    rm $TOGGLE
+    $HOME/bin/unfocus
+fi

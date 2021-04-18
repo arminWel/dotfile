@@ -1,0 +1,4 @@
+#!/bin/zsh
+#Enable notifications
+dunstctl set-paused true
+i3-msg bar mode dock

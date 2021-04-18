@@ -1,0 +1,4 @@
+#!/bin/zsh
+dunstctl set-paused true
+i3-msg bar mode hide
+
